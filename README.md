@@ -58,6 +58,30 @@ This command will start the single-node development chain with persistent state:
 ./target/release/kitties-node --dev
 ```
 
+Custom types to execute kitties-node
+
+```json
+{
+  "AccountInfo": {
+    "nonce": "Index",
+    "consumers": "RefCount",
+    "providers": "RefCount",
+    "data": "AccountData"
+  },
+  "Address": "MultiAddress",
+  "LookupSource": "AccountId",
+  "Gender": {
+    "_enum": ["male", "female"]
+  },
+  "Kitty": {
+    "id": "H256",
+    "dna": "H256",
+    "price": "Balance",
+    "gender": "Gender"
+  }
+}
+```
+
 Purge the development chain's state:
 
 ```bash
