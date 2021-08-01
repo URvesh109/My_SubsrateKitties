@@ -15,6 +15,8 @@ mod benchmarking;
 pub mod pallet {
     use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
+    use sp_runtime::traits::AtLeast32BitUnsigned;
+    use sp_runtime::traits::Saturating;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
