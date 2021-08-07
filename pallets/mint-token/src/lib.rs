@@ -2,18 +2,9 @@
 
 pub use pallet::*;
 
-#[cfg(test)]
-mod mock;
-
-#[cfg(test)]
-mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
-
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
+    use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::AtLeast32BitUnsigned;
     use sp_runtime::traits::Saturating;
@@ -21,6 +12,8 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        // The type used to store balances.
+        type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
     }
 
     #[pallet::pallet]
@@ -28,15 +21,22 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::storage]
-    #[pallet::getter(fn something)]
-    pub type Something<T> = StorageValue<_, u32>;
+    #[pallet::getter(fn get_balance)]
+    pub type BalanceToAccount<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::AccountId, T::Balance, ValueQuery>;
 
     #[pallet::event]
     #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        SomethingStored(u32, T::AccountId),
+        /// New token supply was minted.
+        MintedNewSupply(T::AccountId),
+        /// Tokens were successfully transferred between accounts.
+        Transferred(T::AccountId, T::AccountId, T::Balance), // (from, to, value)
     }
+
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
     #[pallet::error]
     pub enum Error<T> {
@@ -47,25 +47,40 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-            let who = ensure_signed(origin)?;
-            <Something<T>>::put(something);
-            Self::deposit_event(Event::SomethingStored(something, who));
-            Ok(())
+        pub fn mint(origin: OriginFor<T>, amount: T::Balance) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
+
+            // Update storage.
+            <BalanceToAccount<T>>::insert(&sender, amount);
+
+            // Emit an event.
+            Self::deposit_event(Event::MintedNewSupply(sender));
+
+            // Return a successful DispatchResultWithPostInfo.
+            Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-        pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-            let _who = ensure_signed(origin)?;
+        #[pallet::weight(1_000)]
+        pub fn transfer(
+            origin: OriginFor<T>,
+            to: T::AccountId,
+            #[pallet::compact] amount: T::Balance,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
+            let sender_balance = Self::get_balance(&sender);
+            let receiver_balance = Self::get_balance(&to);
 
-            match <Something<T>>::get() {
-                None => Err(Error::<T>::NoneValue)?,
-                Some(old) => {
-                    let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-                    <Something<T>>::put(new);
-                    Ok(())
-                }
-            }
+            // Calculate new balances.
+            let update_sender = sender_balance.saturating_sub(amount);
+            let update_to = receiver_balance.saturating_add(amount);
+
+            // Update both accounts storage.
+            <BalanceToAccount<T>>::insert(&sender, update_sender);
+            <BalanceToAccount<T>>::insert(&sender, update_to);
+
+            // Emit event.
+            Self::deposit_event(Event::Transferred(sender, to, amount));
+            Ok(().into())
         }
     }
 }

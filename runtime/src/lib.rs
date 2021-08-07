@@ -285,6 +285,7 @@ impl pallet_template::Config for Runtime {
 
 impl mint_token::Config for Runtime {
     type Event = Event;
+    type Balance = Balance;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
