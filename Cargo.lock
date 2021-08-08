@@ -828,6 +828,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "config-constant"
+version = "3.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-std",
+]
+
+[[package]]
 name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2685,6 +2699,7 @@ dependencies = [
 name = "kitties-runtime"
 version = "3.0.0"
 dependencies = [
+ "config-constant",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -3537,6 +3552,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

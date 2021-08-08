@@ -48,6 +48,8 @@ pub use pallet_template;
 
 pub use mint_token;
 
+pub use config_constant;
+
 /// An index to a block.
 pub type BlockNumber = u32;
 
@@ -288,6 +290,17 @@ impl mint_token::Config for Runtime {
     type Balance = Balance;
 }
 
+parameter_types! {
+    pub const MaxAddend: u32 = 1738;
+    pub const ClearFrequency: u32 = 10;
+}
+
+impl config_constant::Config for Runtime {
+    type Event = Event;
+    type MaxAddend = MaxAddend;
+    type ClearFrequency = ClearFrequency;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -306,7 +319,8 @@ construct_runtime!(
         // Include the custom logic from the pallet-template in the runtime.
         KittiesModule: pallet_kitties::{Pallet, Call, Config<T>, Storage, Event<T>},
         TemplateModule: pallet_template::{Pallet, Call, Storage, Event<T>},
-        MintToken: mint_token::{Pallet, Call, Storage, Event<T>}
+        MintToken: mint_token::{Pallet, Call, Storage, Event<T>},
+        ConfigConstant: config_constant::{Pallet, Call, Storage, Event<T>}
     }
 );
 

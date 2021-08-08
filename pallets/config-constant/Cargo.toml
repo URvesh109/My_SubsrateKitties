@@ -4,7 +4,7 @@ description = 'FRAME pallet template for defining custom runtime logic.'
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
-name = 'mint-token'
+name = 'config-constant'
 readme = 'README.md'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '3.0.0'
@@ -25,12 +25,6 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'monthly-2021-07'
 version = '3.0.0'
 
-[dependencies.sp-runtime]
-default-features = false
-git = 'https://github.com/paritytech/substrate.git'
-tag = 'monthly-2021-07'
-version = '3.0.0'
-
 [dependencies.sp-std]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
@@ -39,16 +33,12 @@ version = '3.0.0'
 
 [features]
 default = ['std']
-runtime-benchmarks = [
-    'frame-benchmarking',
-    'sp-runtime/runtime-benchmarks',
-]
+runtime-benchmarks = ['frame-benchmarking']
 std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
     'frame-benchmarking/std',
-    'sp-runtime/std',
     'sp-std/std'
 ]
 try-runtime = ['frame-support/try-runtime']

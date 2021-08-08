@@ -150,6 +150,11 @@ default-features = false
 path = '../pallets/mint-token'
 version = '3.0.0'
 
+[dependencies.config-constant]
+default-features = false
+path = '../pallets/config-constant'
+version = '3.0.0'
+
 [dependencies.pallet-timestamp]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
