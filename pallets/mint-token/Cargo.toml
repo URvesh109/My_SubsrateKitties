@@ -4,31 +4,20 @@ description = 'FRAME pallet template for defining custom runtime logic.'
 edition = '2018'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
-name = 'pallet-kitties'
+name = 'mint-token'
 readme = 'README.md'
 repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '3.0.0'
-
-
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
-
-
-[dependencies.serde]
+[dev-dependencies.serde]
 version = '1.0.119'
 
-[dependencies.sp-core]
+[dev-dependencies.sp-core]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 tag = 'monthly-2021-07'
 version = '3.0.0'
-
-[dependencies.pallet-balances]
-default-features = false
-git = 'https://github.com/paritytech/substrate.git'
-tag = 'monthly-2021-07'
-version = '3.0.0'
-
 
 [dev-dependencies.sp-io]
 default-features = false
@@ -44,17 +33,18 @@ version = '3.0.0'
 
 [features]
 default = ['std']
-runtime-benchmarks = ['frame-benchmarking']
+runtime-benchmarks = [
+    'frame-benchmarking',
+    'sp-runtime/runtime-benchmarks',
+]
 std = [
     'codec/std',
     'frame-support/std',
     'frame-system/std',
     'frame-benchmarking/std',
-	'pallet-randomness-collective-flip/std',
-    'sp-core/std',
-    'serde/std'
+    'sp-runtime/std'
 ]
-# try-runtime = ['frame-support/try-runtime']
+try-runtime = ['frame-support/try-runtime']
 [dependencies.codec]
 default-features = false
 features = ['derive']
@@ -75,12 +65,6 @@ tag = 'monthly-2021-07'
 version = '3.0.0'
 
 [dependencies.frame-system]
-default-features = false
-git = 'https://github.com/paritytech/substrate.git'
-tag = 'monthly-2021-07'
-version = '3.0.0'
-
-[dependencies.pallet-randomness-collective-flip]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 tag = 'monthly-2021-07'
